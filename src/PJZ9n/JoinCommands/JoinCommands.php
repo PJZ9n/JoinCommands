@@ -62,6 +62,7 @@ class JoinCommands extends PluginBase implements Listener
      * @param PlayerJoinEvent $event
      *
      * @priority MONITOR
+     * @ignoreCancelled
      */
     public function onPlayerJoin(PlayerJoinEvent $event): void
     {
