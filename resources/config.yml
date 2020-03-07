@@ -1,0 +1,12 @@
+#JoinCommands 設定ファイル
+
+#Join時にプレイヤーから実行するコマンド(何も実行しない場合は、join-player-commands: []とする)
+join-player-commands:
+  - me こんにちは！
+  - me 世界！
+
+#Join時にコンソールから実行するコマンド(何も実行しない場合は、join-console-commands: []とする)
+#プレイヤー名として{player}が使用できます。
+join-console-commands:
+  - say {player}さん、ようこそ！
+  - kill {player}

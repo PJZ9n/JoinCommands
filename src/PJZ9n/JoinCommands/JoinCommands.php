@@ -23,11 +23,34 @@ declare(strict_types=1);
 
 namespace PJZ9n\JoinCommands;
 
+require_once __DIR__ . "/../../../vendor/autoload.php";
+
+use Particle\Validator\Validator;
 use pocketmine\plugin\PluginBase;
 
 class JoinCommands extends PluginBase
 {
     
-    //
+    public function onEnable(): void
+    {
+        $this->saveConfig();
+        $this->saveDefaultConfig();
+        //Validate
+        $validator = new Validator();
+        //TODO 配列の中身も検証
+        $validator->required("join-player-commands")->isArray();
+        $validator->required("join-console-commands")->isArray();
+        $validateResult = $validator->validate($this->getConfig()->getAll());
+        if ($validateResult->isNotValid()) {
+            $errorMessages = [];
+            foreach ($validateResult->getFailures() as $failure) {
+                $errorMessages[] = $failure->format();
+            }
+            $this->getLogger()->error("Configファイルの検証に失敗しました: " . implode(" | ", $errorMessages));
+            $this->getServer()->getPluginManager()->disablePlugin($this);
+            return;
+        }
+        $this->getConfig()->setAll($validateResult->getValues());
+    }
     
 }
