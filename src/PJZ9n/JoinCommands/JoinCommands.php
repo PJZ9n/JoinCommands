@@ -26,9 +26,12 @@ namespace PJZ9n\JoinCommands;
 require_once __DIR__ . "/../../../vendor/autoload.php";
 
 use Particle\Validator\Validator;
+use pocketmine\command\ConsoleCommandSender;
+use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\plugin\PluginBase;
 
-class JoinCommands extends PluginBase
+class JoinCommands extends PluginBase implements Listener
 {
     
     public function onEnable(): void
@@ -51,6 +54,29 @@ class JoinCommands extends PluginBase
             return;
         }
         $this->getConfig()->setAll($validateResult->getValues());
+        //Register Listener
+        $this->getServer()->getPluginManager()->registerEvents($this, $this);
+    }
+    
+    /**
+     * @param PlayerJoinEvent $event
+     *
+     * @priority MONITOR
+     */
+    public function onPlayerJoin(PlayerJoinEvent $event): void
+    {
+        $player = $event->getPlayer();
+        //JoinCommand Player
+        /** @var string $joinPlayerCommand */
+        foreach ($this->getConfig()->get("join-player-commands") as $joinPlayerCommand) {
+            $this->getServer()->getCommandMap()->dispatch($player, $joinPlayerCommand);
+        }
+        //JoinCommand Console
+        /** @var string $joinConsoleCommand */
+        foreach ($this->getConfig()->get("join-console-commands") as $joinConsoleCommand) {
+            $joinConsoleCommand = str_replace("{player}", $player->getName(), $joinConsoleCommand);
+            $this->getServer()->getCommandMap()->dispatch(new ConsoleCommandSender(), $joinConsoleCommand);
+        }
     }
     
 }
